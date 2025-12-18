@@ -1,0 +1,19 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "useGulp": false,
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "22.21.1",
+    "sdksVersions": {},
+    "version": "1.22.1",
+    "libraryName": "helpdesk-spfx",
+    "libraryId": "89e1e048-1b81-4744-8226-7204e021603b",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "helpdesk-spfx",
+    "solutionShortDescription": "helpdesk-spfx description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}

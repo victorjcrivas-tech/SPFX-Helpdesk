@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "helpdesk-spfx-client-side-solution",
+    "id": "89e1e048-1b81-4744-8226-7204e021603b",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.22.1"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "helpdesk-spfx description"
+      },
+      "longDescription": {
+        "default": "helpdesk-spfx description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "helpdesk-spfx Feature",
+        "description": "The feature that activates elements of the helpdesk-spfx solution.",
+        "id": "7fb5d654-d13e-4fd5-9994-96f0f077c184",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/helpdesk-spfx.sppkg"
+  }
+}

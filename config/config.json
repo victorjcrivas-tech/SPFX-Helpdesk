@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "helpdesk-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/helpdesk/HelpdeskWebPart.js",
+          "manifest": "./src/webparts/helpdesk/HelpdeskWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "HelpdeskWebPartStrings": "lib/webparts/helpdesk/loc/{locale}.js"
+  }
+}
