@@ -9,47 +9,47 @@ type RawUser = { Id: number; Title?: string; EMail?: string };
 type RawLookup = { Id: number; Title?: string };
 
 type RawTicketItem = {
-  Id: number;
-  Title?: string;
-  Description?: string;
+    Id: number;
+    Title?: string;
+    Description?: string;
 
-  Priority?: TicketPriority;
-  Status?: TicketStatus;
+    Priority?: TicketPriority;
+    Status?: TicketStatus;
 
-  RequesterId?: number;
-  Requester?: RawUser;
+    RequesterId?: number;
+    Requester?: RawUser;
 
-  ApproverId?: number | null;
-  Approver?: RawUser;
+    ApproverId?: number | null;
+    Approver?: RawUser;
 
-  AssignedToId?: number | null;
-  AssignedTo?: RawUser;
+    AssignedToId?: number | null;
+    AssignedTo?: RawUser;
 
-  SLAHours?: number | null;
-  DueDate?: string | null;
-  ResolutionDate?: string | null;
+    SLAHours?: number | null;
+    DueDate?: string | null;
+    ResolutionDate?: string | null;
 
-  LastApprovalOutcome?: "Approved" | "Rejected" | "Cancelled" | null;
-  TicketNumber?: string | null;
+    LastApprovalOutcome?: "Approved" | "Rejected" | "Cancelled" | null;
+    TicketNumber?: string | null;
 
-  Created?: string;
-  Modified?: string;
+    Created?: string;
+    Modified?: string;
 
-  // Lookup CategoryId
-  CategoryIdId?: number;
-  CategoryId?: RawLookup;
+    // Lookup CategoryId
+    CategoryIdId?: number;
+    CategoryId?: RawLookup;
 };
 
 const odataStr = (v: string) => v.replace(/'/g, "''");
 
-export class TicketService{
+export class TicketService {
 
     constructor(
         private readonly sp: SPFI,
         private readonly listTitle = "Tickets"
-    ){}
+    ) { }
 
-    private list(){
+    private list() {
         return this.sp.web.lists.getByTitle(this.listTitle);
     }
 
@@ -90,8 +90,8 @@ export class TicketService{
         slaHours?: number;
         dueDate?: string;
         ticketNumber?: string;
-    }) : Promise<number>{
-        try{
+    }): Promise<number> {
+        try {
             const addResult = await this.list().items.add({
                 Title: input.title,
                 Description: input.description,
@@ -110,86 +110,86 @@ export class TicketService{
 
             return addResult.data.Id as number;
         }
-        catch(err: any){
+        catch (err: any) {
             throw new Error(`Error creando Draft: ${err?.message ?? err}`);
         }
     }
 
-    public async submit(ticketId: number, patch?: Partial<ITicket>): Promise<void>{
-        try{
+    public async submit(ticketId: number, patch?: Partial<ITicket>): Promise<void> {
+        try {
             const payload = { ...this.buildPayload(patch ?? {}), Status: "Submitted" satisfies TicketStatus };
             await this.list().items.getById(ticketId).update(payload);
         }
-        catch(err:any){
+        catch (err: any) {
             throw new Error(`Error enviando Ticket ${ticketId}: ${err?.message ?? err}`);
         }
     }
 
-    public async update(ticketId: number, patch: Partial<ITicket>) : Promise<void>{
-        try{
+    public async update(ticketId: number, patch: Partial<ITicket>): Promise<void> {
+        try {
             const payload = this.buildPayload(patch);
             await this.list().items.getById(ticketId).update(payload);
         }
-        catch(err:any){
+        catch (err: any) {
             throw new Error(`Error actualizando Ticket ${ticketId}: ${err?.message ?? err}`);
         }
     }
 
-    public async remove(ticketId: number) : Promise<void>{
-        try{
+    public async remove(ticketId: number): Promise<void> {
+        try {
             await this.list().items.getById(ticketId).delete();
         }
-        catch(err:any){
+        catch (err: any) {
             throw new Error(`Error eliminando Ticket ${ticketId}: ${err?.message ?? err}`);
         }
     }
 
-    public async getById(ticketId: number) : Promise<ITicket>{
-        try{
+    public async getById(ticketId: number): Promise<ITicket> {
+        try {
             const item = (await this.list()
-            .items.getById(ticketId)
-            .select(
-                "Id",
-                "Title",
-                "Description",
-                "CategoryId/Id",
-                "Priority",
-                "Status",
-                "Requester/Id",
-                "Requester/Title",
-                "Requester/EMail",
-                "Approver/Id",
-                "Approver/Title",
-                "Approver/EMail",
-                "AssignedTo/Id",
-                "AssignedTo/Title",
-                "AssignedTo/EMail",
-                "SLAHours",
-                "DueDate",
-                "ResolutionDate",
-                "LastApprovalOutcome",
-                "TicketNumber",
-                "Created",
-                "Modified",
-                "CategoryId/Title"
-            )
-            .expand("Requester", "Approver", "AssignedTo", "CategoryId")()) as RawTicketItem;
+                .items.getById(ticketId)
+                .select(
+                    "Id",
+                    "Title",
+                    "Description",
+                    "CategoryId/Id",
+                    "Priority",
+                    "Status",
+                    "Requester/Id",
+                    "Requester/Title",
+                    "Requester/EMail",
+                    "Approver/Id",
+                    "Approver/Title",
+                    "Approver/EMail",
+                    "AssignedTo/Id",
+                    "AssignedTo/Title",
+                    "AssignedTo/EMail",
+                    "SLAHours",
+                    "DueDate",
+                    "ResolutionDate",
+                    "LastApprovalOutcome",
+                    "TicketNumber",
+                    "Created",
+                    "Modified",
+                    "CategoryId/Title"
+                )
+                .expand("Requester", "Approver", "AssignedTo", "CategoryId")()) as RawTicketItem;
 
             return this.mapItem(item);
         }
-        catch(err: any){
+        catch (err: any) {
             throw new Error(`Error obteniendo Ticket ${ticketId}: ${err?.message ?? err}`);
         }
     }
 
-    public async search(query: ITicketQuery): Promise<{ items: ITicket[]; total: number }>{
-        try{
+    public async search(query: ITicketQuery): Promise<{ items: ITicket[]; total: number }> {
+        try {
             const page = Math.max(1, query.page ?? 1);
             const pageSize = Math.min(100, Math.max(1, query.pageSize ?? 20));
 
             const filters: string[] = [];
 
-            if(query.status) filters.push(`Status eq '${odataStr(query.status)}'`);
+            if (query.status) filters.push(`Status eq '${odataStr(query.status)}'`);
             if (query.priority) filters.push(`Priority eq '${odataStr(query.priority)}'`);
             if (query.categoryId) filters.push(`CategoryId/Id eq ${query.categoryId}`);
 
@@ -197,12 +197,12 @@ export class TicketService{
             if (query.dateFrom) filters.push(`Created ge datetime'${query.dateFrom}'`);
             if (query.dateTo) filters.push(`Created le datetime'${query.dateTo}'`);
 
-            // búsqueda texto (Title/Description)
-            // substringof puede no usar índice, usarlo con debounce y pageSize razonable.
+            // búsqueda texto (Title)
             if (query.text && query.text.trim().length > 0) {
-                const t = odataStr(query.text.trim());
-                filters.push(`(${containsText("Title", t)} or ${containsText("Description", t)})`);
+                const t = query.text.trim(); //
+                filters.push(`(${containsText("Title", t)})`);
             }
+
 
             const filterOdata = filters.length ? filters.join(" and ") : undefined;
 
@@ -216,36 +216,36 @@ export class TicketService{
             const top = page * pageSize;
 
             let q = this.list().items
-            .select(
-                "Id",
-                "Title",
-                "Description",
-                "CategoryId/Id",
-                "Priority",
-                "Status",
-                "Requester/Id",
-                "Requester/Title",
-                "Requester/EMail",
-                "Approver/Id",
-                "Approver/Title",
-                "Approver/EMail",
-                "AssignedTo/Id",
-                "AssignedTo/Title",
-                "AssignedTo/EMail",
-                "SLAHours",
-                "DueDate",
-                "ResolutionDate",
-                "LastApprovalOutcome",
-                "TicketNumber",
-                "Created",
-                "Modified",
-                "CategoryId/Title"
-            )
-            .expand("Requester", "Approver", "AssignedTo", "CategoryId")
-            .orderBy(orderBy, orderAsc)
-            .top(top);
+                .select(
+                    "Id",
+                    "Title",
+                    "Description",
+                    "CategoryId/Id",
+                    "Priority",
+                    "Status",
+                    "Requester/Id",
+                    "Requester/Title",
+                    "Requester/EMail",
+                    "Approver/Id",
+                    "Approver/Title",
+                    "Approver/EMail",
+                    "AssignedTo/Id",
+                    "AssignedTo/Title",
+                    "AssignedTo/EMail",
+                    "SLAHours",
+                    "DueDate",
+                    "ResolutionDate",
+                    "LastApprovalOutcome",
+                    "TicketNumber",
+                    "Created",
+                    "Modified",
+                    "CategoryId/Title"
+                )
+                .expand("Requester", "Approver", "AssignedTo", "CategoryId")
+                .orderBy(orderBy, orderAsc)
+                .top(top);
 
-            if(filterOdata)
+            if (filterOdata)
                 q = q.filter(filterOdata);
 
             const results = (await q()) as RawTicketItem[];
@@ -263,18 +263,18 @@ export class TicketService{
 
             return { items, total };
         }
-        catch(err: any){
+        catch (err: any) {
             throw new Error(`Error buscando tickets: ${err?.message ?? err}`);
         }
     }
 
-    private async countTickets(filterOdata?: string): Promise<number>{
-        
-        let q = this.list().items
-        .select("Id")
-        .top(5000);
+    private async countTickets(filterOdata?: string): Promise<number> {
 
-        if(filterOdata)
+        let q = this.list().items
+            .select("Id")
+            .top(5000);
+
+        if (filterOdata)
             q = q.filter(filterOdata);
 
         const rows = await q();
@@ -283,38 +283,38 @@ export class TicketService{
     }
 
     private mapItem(i: RawTicketItem): ITicket {
-    return {
-      id: i.Id,
-      title: i.Title ?? "",
-      description: i.Description ?? "",
+        return {
+            id: i.Id,
+            title: i.Title ?? "",
+            description: i.Description ?? "",
 
-      categoryId: i.CategoryId?.Id ?? i.CategoryIdId ?? 0,
-      categoryTitle: i.CategoryId?.Title,
+            categoryId: i.CategoryId?.Id ?? i.CategoryIdId ?? 0,
+            categoryTitle: i.CategoryId?.Title,
 
-      priority: i.Priority ?? "Low",
-      status: i.Status ?? "Draft",
+            priority: i.Priority ?? "Low",
+            status: i.Status ?? "Draft",
 
-      requesterId: i.Requester?.Id ?? i.RequesterId ?? 0,
-      requesterTitle: i.Requester?.Title,
-      requesterEmail: i.Requester?.EMail,
+            requesterId: i.Requester?.Id ?? i.RequesterId ?? 0,
+            requesterTitle: i.Requester?.Title,
+            requesterEmail: i.Requester?.EMail,
 
-      approverId: i.Approver?.Id ?? (i.ApproverId ?? undefined),
-      approverTitle: i.Approver?.Title,
-      approverEmail: i.Approver?.EMail,
+            approverId: i.Approver?.Id ?? (i.ApproverId ?? undefined),
+            approverTitle: i.Approver?.Title,
+            approverEmail: i.Approver?.EMail,
 
-      assignedToId: i.AssignedTo?.Id ?? (i.AssignedToId ?? undefined),
-      assignedToTitle: i.AssignedTo?.Title,
-      assignedToEmail: i.AssignedTo?.EMail,
+            assignedToId: i.AssignedTo?.Id ?? (i.AssignedToId ?? undefined),
+            assignedToTitle: i.AssignedTo?.Title,
+            assignedToEmail: i.AssignedTo?.EMail,
 
-      slaHours: i.SLAHours ?? undefined,
-      dueDate: i.DueDate ?? undefined,
-      resolutionDate: i.ResolutionDate ?? undefined,
+            slaHours: i.SLAHours ?? undefined,
+            dueDate: i.DueDate ?? undefined,
+            resolutionDate: i.ResolutionDate ?? undefined,
 
-      lastApprovalOutcome: i.LastApprovalOutcome ?? undefined,
-      ticketNumber: i.TicketNumber ?? undefined,
+            lastApprovalOutcome: i.LastApprovalOutcome ?? undefined,
+            ticketNumber: i.TicketNumber ?? undefined,
 
-      created: i.Created,
-      modified: i.Modified
-    };
-  }
+            created: i.Created,
+            modified: i.Modified
+        };
+    }
 }

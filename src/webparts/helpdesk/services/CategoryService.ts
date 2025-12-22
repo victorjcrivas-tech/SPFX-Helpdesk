@@ -8,12 +8,14 @@ export interface ICategoryOption {
 }
 
 export class CategoryService {
+
     constructor(
         private sp: SPFI,
         private listTitle = "Categories"
     ) { }
 
     public async getOptions(): Promise<ICategoryOption[]> {
+        
         const items = await this.sp.web.lists
             .getByTitle(this.listTitle)
             .items.select("Id", "Title")
